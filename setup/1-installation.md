@@ -8,7 +8,7 @@ Begin by opening your terminal and ensuring you have reviewed the repository pri
 
 ```
 $ cd
-$ git clone https://github.com/CryptoUnico/merkle-distributor merkle
+$ git clone https://github.com/CryptoUnico/robot-distributions robot-distributions
 ```
 
 {% hint style="info" %}
@@ -20,11 +20,10 @@ $ git clone https://github.com/CryptoUnico/merkle-distributor merkle
 After cloning, navigate to the directory and install dependencies with yarn.
 
 ```bash
-$ cd merkle
+$ cd robot-distributions
 $ yarn
 ```
 
 #### Note on Package.json
 
 The original scripts now include a shortcut for generating and verifying merkle roots. This may be found in the Package.json stored in the repository you cloned. Take a second to review and consider what else you may do to make working with the Merkle Airdrop repository easier for your use case.
-
