@@ -14,4 +14,3 @@ contract MerkleDistributor is IMerkleDistributor {
 {% endcode %}
 
 ### 
-
