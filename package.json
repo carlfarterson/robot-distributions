@@ -2,7 +2,7 @@
   "name": "robot-distributions",
   "version": "1.0.0",
   "description": "",
-  "author": "MetaFactory",
+  "author": "MetaFactory, Uni",
   "license": "MIT",
   "main": "index.ts",
   "scripts": {
