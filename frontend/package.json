@@ -1,5 +1,5 @@
 {
-  "name": "merkle-distributor-frontend",
+  "name": "robot-distributions-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
