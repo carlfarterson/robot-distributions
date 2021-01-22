@@ -1,7 +1,1 @@
-// Overwrite with production claims.
-
-{
-"0x4335793db316340f9fa92cd69e903452a4590006": 36003604770000000000000,
-"0xb035fb0d581c8fd198e26a937ff5ac91675c5831": 100000000000000000,
-//etc
-}
+// Input production claims JSON.
