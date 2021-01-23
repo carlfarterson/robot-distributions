@@ -10,8 +10,6 @@ contract MerkleDistributor is IMerkleDistributor {
     using SafeMath for uint256;
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
-    address public immutable override rewardsAddress;
-    address public immutable override burnAddress;
     
     // Packed array of booleans.
     mapping(uint256 => uint256) private claimedBitMap;
@@ -24,8 +22,6 @@ contract MerkleDistributor is IMerkleDistributor {
     constructor(address token_, bytes32 merkleRoot_, address rewardsAddress_, address burnAddress_, uint256 startTime_, uint256 endTime_) public {
         token = token_;
         merkleRoot = merkleRoot_;
-        rewardsAddress = rewardsAddress_;
-        burnAddress = burnAddress_;
         deployer = msg.sender; // the deployer address
         startTime = startTime_;
         endTime = endTime_;
@@ -57,8 +53,8 @@ contract MerkleDistributor is IMerkleDistributor {
         _setClaimed(index);
         uint256 duraTime = block.timestamp.sub(startTime);
         
-        require(block.timestamp >= startTime, 'MerkleDistributor: Too soon'); // [P] Start (unix): 1607990400 | Tuesday, December 15th, 2020 @ 12:00AM GMT
-        require(block.timestamp <= endTime, 'MerkleDistributor: Too late'); // [P] End (unix): 1616630400 | Thursday, March 25th, 2021 @ 12:00AM GMT
+        require(block.timestamp >= startTime, 'MerkleDistributor: Too soon'); // [P] Start (unix)
+        require(block.timestamp <= endTime, 'MerkleDistributor: Too late'); // [P] End (unix)
 
         uint256 duraDays = duraTime.div(secondsInaDay);
         require(duraDays <= 100, 'MerkleDistributor: Too late'); // Check days
