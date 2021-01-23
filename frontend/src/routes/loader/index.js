@@ -1,5 +1,6 @@
 import React from "react";
-import Spinner from "../../assets/logos/governor-spinner.gif";
+import Spinner from "../../assets/logos/robot-spinner.gif";
+
 import "./style.scss";
 
 const loader = () => {

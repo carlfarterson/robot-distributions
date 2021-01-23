@@ -22,9 +22,7 @@ export default class Routes extends Component {
             <Switch>
               <Route exact path={"/"} component={Airdrop} />
               <Route
-                path={"/404"}
-                render={() =>
-                  window.location.replace("https://governordao.org")
+                  window.location.replace("https://shop.metafactory.ai")
                 }
               />
               <Redirect to={"/404"} />
