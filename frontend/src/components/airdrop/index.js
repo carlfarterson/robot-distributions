@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 import { ConnectButton } from "./elements";
 
 // * ABI
-import { GDAOABI } from "../../data/abi/GDAOABI";
+import { ROBOTABI } from "../../data/abi/ROBOTABI";
 
 // * CONSTANTS
-import { GDAOAddress, rewardPoolAddress } from "../../data/constants/constants";
+import { ROBOTAddress } from "../../data/constants/constants";
 import { merkle } from "../../data/constants/merkle";
 
 import "./style.scss";
@@ -22,7 +22,6 @@ class Airdrop extends Component {
       day: 0,
       percentage: 0,
       unclaimed: 0,
-      burned: 0,
       reward: 0,
       claimable: 0,
       isAirdropClaimed: false,
@@ -30,11 +29,10 @@ class Airdrop extends Component {
       isAirdropLive: false,
       countdownString: "0:0:0",
     };
-    this.GDAOABI = GDAOABI;
+    this.ROBOTABI = ROBOTABI;
     this.merkle = merkle;
-    this.GDAOAddress = GDAOAddress;
-    this.rewardPoolAddress = rewardPoolAddress;
-    this.GDAOContract = null;
+    this.ROBOTAddress = ROBOTAddress;
+    this.ROBOTContract = null;
     this.airdropContract = null;
   }
 
@@ -125,9 +123,9 @@ class Airdrop extends Component {
       if (x === 1) {
         this.setState({ account: accounts[0].toString(), isConnected: true });
 
-        this.GDAOContract = new this.web3.eth.Contract(
-          this.GDAOABI,
-          this.GDAOAddress
+        this.ROBOTContract = new this.web3.eth.Contract(
+          this.ROBOTABI,
+          this.ROBOTAddress
         );
         this.airdropContract = new this.web3.eth.Contract(
           this.merkle.contractABI,
@@ -160,22 +158,22 @@ class Airdrop extends Component {
       Math.round(
         (currentTimestamp - this.merkle.startTimestamp) / 60 / 60 / 24
       ) - 1;
-    let rewardMultiplier = 0.1;
+    let rewardMultiplier = 1;
 
-    if (daysPassed > 90) {
-      rewardMultiplier = 1;
-    } else if (daysPassed < 0) {
-      rewardMultiplier = 0;
-    } else {
-      rewardMultiplier += daysPassed * 0.01;
-    }
+    // if (daysPassed > 90) {
+    //   rewardMultiplier = 1;
+    // } else if (daysPassed < 0) {
+    //   rewardMultiplier = 0;
+    // } else {
+    //   rewardMultiplier += daysPassed * 0.01;
+    // }
 
     let percentageToday = Math.round(rewardMultiplier * 100);
 
     this.setState({ percentage: percentageToday, day: daysPassed });
 
-    if (this.airdropContract != null && this.GDAOContract != null) {
-      this.GDAOContract.methods
+    if (this.airdropContract != null && this.ROBOTContract != null) {
+      this.ROBOTContract.methods
         .balanceOf(this.merkle.contractAddress)
         .call()
         .then((result) => {
@@ -183,20 +181,7 @@ class Airdrop extends Component {
             unclaimed: parseFloat(this.web3.utils.fromWei(result, "ether")),
           });
         });
-      this.airdropContract.methods
-        .burnAddress()
-        .call()
-        .then((burnAddress) => {
-          this.GDAOContract.methods
-            .balanceOf(burnAddress)
-            .call()
-            .then((result) => {
-              this.setState({
-                burned: parseFloat(this.web3.utils.fromWei(result, "ether")),
-              });
-            });
-        });
-      this.GDAOContract.methods
+      this.ROBOTContract.methods
         .balanceOf(this.rewardPoolAddress)
         .call()
         .then((result) => {
@@ -307,7 +292,7 @@ class Airdrop extends Component {
       <div className="max-width-container">
         <div className="airdrop-container">
           <div className="airdrop-title">
-            <div className="title-text">GDAO Airdrop</div>
+            <div className="title-text">ROBOT Airdrop</div>
             <ConnectButton
               account={this.state.account}
               setConnection={this.setConnection}
@@ -318,12 +303,12 @@ class Airdrop extends Component {
             {this.state.day}
           </div>
           <div className="airdrop-subtitle">
-            <span>Claimable GDAO: </span>
+            <span>Claimable ROBOT: </span>
             {this.state.percentage}%
           </div>
           <div className="airdrop-subtitle">
             <a
-              href="https://etherscan.io/address/0x7ea0f8bb2f01c197985c285e193dd5b8a69836c0#code"
+              href="https://etherscan.io/address/0x0#code"
               rel="noreferrer"
               target="_blank"
               style={{
@@ -340,15 +325,9 @@ class Airdrop extends Component {
           <div className="airdrop-details">
             <div className="upper">
               <div className="details-item">
-                <div className="title">Unclaimed GDAO</div>
+                <div className="title">Unclaimed ROBOT</div>
                 <div className="value">
                   {this.state.unclaimed.toLocaleString()}
-                </div>
-              </div>
-              <div className="details-item">
-                <div className="title">Burned GDAO</div>
-                <div className="value">
-                  {this.state.burned.toLocaleString()}
                 </div>
               </div>
               <div className="details-item">
@@ -373,7 +352,7 @@ class Airdrop extends Component {
                     ) : (
                       <>
                         <div className="claim-item">
-                          <div className="title">Claimable GDAO</div>
+                          <div className="title">Claimable ROBOT</div>
                           <div className="value">
                             {this.state.claimable.toLocaleString()}
                           </div>
@@ -415,8 +394,8 @@ class Airdrop extends Component {
             </div>
           </div>
         </div>
-        <div className="gdao-texture-bg" />
-        <div className="gdao-phoenix-bg" />
+        <div className="robot-texture-bg" />
+        <div className="robot-logo-bg" />
       </div>
     );
   }

@@ -1,5 +1,5 @@
 export const merkle = {
-  contractAddress: "0x7ea0f8bb2f01c197985c285e193dd5b8a69836c0",
+  contractAddress: "0x7ea0f8bb2f01c197985c285e193dd5b8a69836c0", // UPDATE UPON DEPLOYMENT
   contractABI: [
     {
       inputs: [

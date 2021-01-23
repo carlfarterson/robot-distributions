@@ -20,7 +20,7 @@ export default class Routes extends Component {
           <OnPageChange>
             <Header />
             <Switch>
-              <Route exact path={"/"} component={Airdrop} />
+              <Route exact path={"/"} component={ Airdrop } />
               <Route
                   window.location.replace("https://shop.metafactory.ai")
                 }

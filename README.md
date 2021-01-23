@@ -10,3 +10,7 @@ can verify the token allocations themselves.
 
 The sales data for the Dec 2020 buyer/designer distribution can be found in the `dec2020` folder in the repo. This includes
 all shop purchases from Jan 1, 2020 to Dec 06, 2020. The code used to calculate the distribution can be found in `index.ts`.
+
+## Details
+* Etherscan [[here](https://etherscan.io/address/0xfb5453340c03db5ade474b27e68b6a9c6b2823eb)]
+* $ROBOT Address: 0xfb5453340c03db5ade474b27e68b6a9c6b2823eb

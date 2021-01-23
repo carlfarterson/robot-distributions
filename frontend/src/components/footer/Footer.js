@@ -14,32 +14,16 @@ class Footer extends Component {
             <div className="navigation">
               <div className="item">
                 <div className="header">Applications</div>
-                <a href="https://mine.governordao.org/">Liquidity Mine</a>
-                <a href="https://swap.governordao.org/">Swap</a>
-                <a href="https://airdrop.governordao.org/">Airdrop</a>
+                <a href="https://shop.metafactory.ai">Shop</a>
               </div>
               <div className="item">
                 <div className="header">Social</div>
-                <a href="https://t.me/GovernorProject">Telegram</a>
-                <a href="https://discord.gg/5UKw3BC">Discord</a>
-                <a href="https://twitter.com/Governor_DAO">Twitter</a>
+                <a href="https://discord.gg/syk4SWmUPu">Discord</a>
+                <a href="https://twitter.com/MetaFactory">Twitter</a>
               </div>
               <div className="item">
                 <div className="header">Resources</div>
-                <a href="https://governordao.org/media">Media</a>
-                <a href="https://gdao.network/">Forum</a>
-                <a
-                  href="/"
-                  onClick={() =>
-                    window.open(
-                      "https://governordao.org/papers/GDAO-Litepaper.pdf",
-                      "_blank"
-                    )
-                  }
-                >
-                  Litepaper
-                </a>
-                <a href="https://governor.social/">Archive</a>
+                <a href="https://gov.metafactory.ai/">Forum</a>
               </div>
               <div className="item">
                 <img
@@ -63,27 +47,17 @@ class Footer extends Component {
                     <img src={m[0]} alt={m[1]} />
                   </a>
                 ))}
-                <a
-                  className="powered-by"
-                  href="https://aragon.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={Aragon} alt="" />
-                </a>
               </div>
             </div>
           </div>
           <div className="bottom">
-            <a href="https://governordao.org">
+            <a href="https://metafactory.ai">
               <img src={Logo} alt="" className="logo" />
             </a>
             <div className="footer-typer-container">
               <ReactTypingEffect
                 text={[
-                  "Governance_as_a_Service.",
-                  "We_Are_One._We_Are_All.",
-                  "Governor_DAO_Rises.",
+                  "Hi, I am a quote",
                 ]}
                 cursorRenderer={(cursor) => (
                   <span className="footer-typer-cursor">{cursor}</span>
