@@ -19,7 +19,7 @@ contract MerkleDistributor is IMerkleDistributor {
     uint256 public immutable endTime;
     uint256 internal immutable secondsInaDay = 86400;
 
-    constructor(address token_, bytes32 merkleRoot_, address rewardsAddress_, address burnAddress_, uint256 startTime_, uint256 endTime_) public {
+    constructor(address token_, bytes32 merkleRoot_,uint256 startTime_, uint256 endTime_) public {
         token = token_;
         merkleRoot = merkleRoot_;
         deployer = msg.sender; // the deployer address
@@ -50,7 +50,6 @@ contract MerkleDistributor is IMerkleDistributor {
         require(MerkleProof.verify(merkleProof, merkleRoot, node), 'MerkleDistributor: Invalid proof.');
 
         // CLAIM AND SEND | TOKEN TO ACCOUNT
-        _setClaimed(index);
         uint256 duraTime = block.timestamp.sub(startTime);
         
         require(block.timestamp >= startTime, 'MerkleDistributor: Too soon'); // [P] Start (unix)
@@ -60,10 +59,12 @@ contract MerkleDistributor is IMerkleDistributor {
         require(duraDays <= 100, 'MerkleDistributor: Too late'); // Check days
 
         uint256 claimableDays = duraDays >= 90 ? 90 : duraDays; // limits claimable days (90)
-        uint256 claimableAmount = amount.mul(claimableDays.add(10)).div(100); // 10% + 1% daily
+        uint256 claimableAmount = amount; // 10% + 1% daily
         require(claimableAmount <= amount, 'MerkleDistributor: Slow your roll'); // gem insurance
         uint256 forfeitedAmount = amount.sub(claimableAmount);
-        
+
+        _setClaimed(index);
+
         require(IERC20(token).transfer(account, claimableAmount), 'MerkleDistributor: Transfer to Account failed.');
         require(IERC20(token).transfer(rewardsAddress, forfeitedAmount.div(2)), 'MerkleDistributor: Transfer to rewardAddress failed.');
         require(IERC20(token).transfer(burnAddress, forfeitedAmount.div(2)), 'MerkleDistributor: Transfer to burnAddress failed.');
@@ -74,11 +75,8 @@ contract MerkleDistributor is IMerkleDistributor {
     function collectDust(address _token, uint256 _amount) external {
         require(msg.sender == deployer, "!deployer");
         require(_token != token, "!token");
-        if (_token == address(0)) { // token address(0) = ETH
-        payable(deployer).transfer(_amount);
-        } else {
-        IERC20(_token).transfer(deployer, _amount);
-        }
+        _token == address(0) ? payable(deployer).transfer(_amount) : IERC20(_token).transfer(deployer, _amount);
+
     }
     
     function collectUnclaimed(uint256 amount) external{
