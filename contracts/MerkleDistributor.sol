@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >;
+pragma solidity ^0.8.0;
 
+import '@openzeppelin/upgrades/contracts/Initializable.sol';
+import '@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/math/SafeMath.sol';
 import '@openzeppelin/contracts/cryptography/MerkleProof.sol';
 import './interfaces/IMerkleDistributor.sol';
 
-contract MerkleDistributor is IMerkleDistributor {
-    using SafeMath for uint256;
+contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
 
     event Cancelled();
 
@@ -68,7 +68,6 @@ contract MerkleDistributor is IMerkleDistributor {
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
         require(msg.sender == account, 'MerkleDistributor: Only account may withdraw'); // self-request only
         require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
-
 
 
 
