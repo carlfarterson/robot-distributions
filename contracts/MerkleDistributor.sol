@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity =0.6.11;
+pragma solidity >;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/math/SafeMath.sol';
@@ -8,23 +8,47 @@ import './interfaces/IMerkleDistributor.sol';
 
 contract MerkleDistributor is IMerkleDistributor {
     using SafeMath for uint256;
+
+    event Cancelled();
+
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
     
-    // Packed array of booleans.
-    mapping(uint256 => uint256) private claimedBitMap;
-    address deployer;
-
     uint256 public immutable startTime;
     uint256 public immutable endTime;
     uint256 internal immutable secondsInaDay = 86400;
 
-    constructor(address token_, bytes32 merkleRoot_,uint256 startTime_, uint256 endTime_) public {
-        token = token_;
-        merkleRoot = merkleRoot_;
-        deployer = msg.sender; // the deployer address
-        startTime = startTime_;
-        endTime = endTime_;
+    bool public initialized;
+    bool public cancelled;
+
+    mapping(uint256 => uint256) private claimedBitMap;
+
+    /*
+    mapping(address => bool) private canClaim;
+    function canAddressClaim(address _address) external view returns (bool)  {
+        return canClaim[_address];
+    }
+    */
+
+    constructor() public {}
+   
+    function init(
+        address _deployer,
+        bytes32 _merkleRoot,
+        uint256 _startTime,
+        uint256 _endTime
+    ) external {
+        require(!initialized, "init: already initialized");
+        deployer = msg.sender;
+        deployer = _deployer;
+        merkleRoot = _merkleRoot;
+        startTime = _startTime;
+        endTime = _endTime;
+    }
+
+    function cancel() external onlyOwner {
+        require(!isCancelled, "cancel: already cancelled");
+        emit Cancelled();
     }
 
     function isClaimed(uint256 index) public view override returns (bool) {
@@ -44,6 +68,9 @@ contract MerkleDistributor is IMerkleDistributor {
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
         require(msg.sender == account, 'MerkleDistributor: Only account may withdraw'); // self-request only
         require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
+
+
+
 
         // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));
@@ -73,19 +100,19 @@ contract MerkleDistributor is IMerkleDistributor {
     }
 
     function collectDust(address _token, uint256 _amount) external {
-        require(msg.sender == deployer, "!deployer");
+        require(msg.sender == owner, "!owner");
         require(_token != token, "!token");
-        _token == address(0) ? payable(deployer).transfer(_amount) : IERC20(_token).transfer(deployer, _amount);
+        _token == address(0) ? payable(owner).transfer(_amount) : IERC20(_token).transfer(owner, _amount);
 
     }
     
     function collectUnclaimed(uint256 amount) external{
-        require(msg.sender == deployer, 'MerkleDistributor: not deployer');
-        require(IERC20(token).transfer(deployer, amount), 'MerkleDistributor: collectUnclaimed failed.');
+        require(msg.sender == owner, 'MerkleDistributor: not owner');
+        require(IERC20(token).transfer(owner, amount), 'MerkleDistributor: collectUnclaimed failed.');
     }
 
-    function dev(address _deployer) public {
-        require(msg.sender == deployer, 'dev: wut?');
-        deployer = _deployer;
+    function dev(address _owner) public {
+        require(msg.sender == owner, 'dev: wut?');
+        owner = _owner;
     }
 }
