@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { ConnectButton } from "./elements";
 
 // * ABI
-import { ROBOTABI } from "../../data/abi/ROBOTABI";
+import { ABI } from "../../data/abi/ABI";
 
 // * CONSTANTS
 import { ROBOTAddress } from "../../data/constants/constants";
@@ -29,7 +29,7 @@ class Airdrop extends Component {
       isAirdropLive: false,
       countdownString: "0:0:0",
     };
-    this.ROBOTABI = ROBOTABI;
+    this.ABI = ABI;
     this.merkle = merkle;
     this.ROBOTAddress = ROBOTAddress;
     this.ROBOTContract = null;
@@ -124,7 +124,7 @@ class Airdrop extends Component {
         this.setState({ account: accounts[0].toString(), isConnected: true });
 
         this.ROBOTContract = new this.web3.eth.Contract(
-          this.ROBOTABI,
+          this.ABI,
           this.ROBOTAddress
         );
         this.airdropContract = new this.web3.eth.Contract(
@@ -218,19 +218,14 @@ class Airdrop extends Component {
   };
 
   claimAirdrop = () => {
+    account = this.web3.utils.toChecksumAddress(this.state.account)
     if (this.web3 != null && this.airdropContract != null) {
       this.airdropContract.methods
         .claim(
-          this.merkle.claims[
-            this.web3.utils.toChecksumAddress(this.state.account)
-          ].index,
+          this.merkle.claims[account].index,
           this.state.account,
-          this.merkle.claims[
-            this.web3.utils.toChecksumAddress(this.state.account)
-          ].amount,
-          this.merkle.claims[
-            this.web3.utils.toChecksumAddress(this.state.account)
-          ].proof
+          this.merkle.claims[account].amount,
+          this.merkle.claims[account].proof
         )
         .send({
           from: this.state.account,
