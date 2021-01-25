@@ -8,16 +8,12 @@ import './interfaces/IMerkleDistributor.sol';
 
 contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
 
-    event Cancelled();
+    event CancelDrop();
 
     address public owner;
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
     
-    uint256 public immutable startTime;
-    uint256 public immutable endTime;
-    uint256 internal immutable secondsInaDay = 86400;
-
     bool public initialized;
     bool public cancelled;
 
@@ -34,19 +30,21 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
    
     function initialize(
         address _owner,
-        bytes32 _merkleRoot,
+        address _token,
+        bytes32 _merkleRoot
     ) external {
-        require(!initialized, "init: already initialized");
-
+        require(!initialized, 'initialize: already initialized');
         owner = _owner;
+        token = _token;
         merkleRoot = _merkleRoot;
         initialized = true;
     }
 
-    function cancelDrop() external onlyOwner {
-        require(!isCancelled, "cancel: already cancelled");
+    function cancelDrop(address _address) external onlyOwner {
+        require(!isCancelled, 'cancelDrop: Drop already cancelled');
         cancelled = true;
-        emit Cancelled();
+        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this)), 'collectUnclaimed: collectUnclaimed failed.');
+        emit CancelDrop();
     }
 
     function isClaimed(uint256 index) public view override returns (bool) {
@@ -64,47 +62,31 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
     }
 
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
-        require(!cancelled, "claim: Drop is cancelled");
-        require(msg.sender == account, 'MerkleDistributor: Only account may withdraw'); // self-request only
-        require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
+        require(!cancelled, 'claim: Drop is cancelled');
+        require(msg.sender == account, 'claim: Only account may withdraw'); // self-request only
+        require(!isClaimed(index), 'claim: Drop already claimed.');
 
         // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));
-        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'MerkleDistributor: Invalid proof.');
-
-        // CLAIM AND SEND | TOKEN TO ACCOUNT
-        uint256 duraTime = block.timestamp.sub(startTime);
-        
-        require(block.timestamp >= startTime, 'MerkleDistributor: Too soon'); // [P] Start (unix)
-        require(block.timestamp <= endTime, 'MerkleDistributor: Too late'); // [P] End (unix)
-
-        uint256 duraDays = duraTime.div(secondsInaDay);
-        require(duraDays <= 100, 'MerkleDistributor: Too late'); // Check days
-
-        uint256 claimableDays = duraDays >= 90 ? 90 : duraDays; // limits claimable days (90)
-        uint256 claimableAmount = amount; // 10% + 1% daily
-        require(claimableAmount <= amount, 'MerkleDistributor: Slow your roll'); // gem insurance
-        uint256 forfeitedAmount = amount.sub(claimableAmount);
+        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'claim: Invalid proof.');
 
         _setClaimed(index);
 
-        require(IERC20(token).transfer(account, claimableAmount), 'MerkleDistributor: Transfer to Account failed.');
-        require(IERC20(token).transfer(rewardsAddress, forfeitedAmount.div(2)), 'MerkleDistributor: Transfer to rewardAddress failed.');
-        require(IERC20(token).transfer(burnAddress, forfeitedAmount.div(2)), 'MerkleDistributor: Transfer to burnAddress failed.');
+        require(IERC20(token).transfer(account, claimableAmount), 'claim: Transfer to Account failed.');
 
         emit Claimed(index, account, amount);
     }
 
+    // TODO: remove these functions below?
     function collectDust(address _token, uint256 _amount) external {
-        require(msg.sender == owner, "!owner");
-        require(_token != token, "!token");
+        require(msg.sender == owner, '!owner');
+        require(_token != token, '!token');
         _token == address(0) ? payable(owner).transfer(_amount) : IERC20(_token).transfer(owner, _amount);
-
     }
     
     function collectUnclaimed(uint256 amount) external{
-        require(msg.sender == owner, 'MerkleDistributor: not owner');
-        require(IERC20(token).transfer(owner, amount), 'MerkleDistributor: collectUnclaimed failed.');
+        require(msg.sender == owner, 'collectUnclaimed: not owner');
+        require(IERC20(token).transfer(owner, amount), 'collectUnclaimed: collectUnclaimed failed.');
     }
 
     function dev(address _owner) public {

@@ -22,9 +22,9 @@ contract MerkleDistributorFactory is Ownable {
     template = _template;
   }
 
-  function createDrop(bytes32 _merkleRoot) external onlyOwner returns (MerkleDistributor) {
+  function createDrop(address _token, bytes32 _merkleRoot) external onlyOwner returns (MerkleDistributor) {
     MerkleDistributor merkleDistributor = MerkleDistributor(createClone(template));
-    merkleDistributor.initialize(address(this), _merkleRoot);
+    merkleDistributor.initialize(address(this), _token, _merkleRoot);
 
     // append to drops
     drops.push(merkleDistributor);
