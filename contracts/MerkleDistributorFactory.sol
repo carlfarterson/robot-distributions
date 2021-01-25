@@ -4,8 +4,13 @@ import "./MerkleDistributor.sol";
 
 contract MerkleDistributorFactory is Ownable {
   
+  event CreateDrop(address drop);
+  event CancelDrop(address drop);
+
   address public owner;
   address public template;
+
+  address[] public drops;
 
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -17,11 +22,25 @@ contract MerkleDistributorFactory is Ownable {
     template = _template;
   }
 
-  function createDrop() external onlyOwner returns (MerkleDistributor) {
+  function createDrop(bytes32 _merkleRoot) external onlyOwner returns (MerkleDistributor) {
     MerkleDistributor merkleDistributor = MerkleDistributor(createClone(template));
-    merkleDistributor.initialize();
+    merkleDistributor.initialize(address(this), _merkleRoot);
 
     // append to drops
+    drops.push(merkleDistributor);
+
+    emit CreateDrop(merkleDistributor);
+  }
+
+  function cancelDrop(address _address) external onlyOwner returns (bool) {
+    for (i=0; drops.length; i++) {
+      if (drops[i] == _address) {
+        delete drops[i];
+        emit CancelDrop(_address);
+        return true;
+      }
+    }
+    return false;
   }
 
   function createClone(address target) internal returns (address result) {
