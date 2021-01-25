@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/upgrades/contracts/Initializable.sol';
-import '@openzeppelin/contracts-ethereum-package/contracts/ownership/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/cryptography/MerkleProof.sol';
 import './interfaces/IMerkleDistributor.sol';
@@ -34,23 +33,19 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
     constructor() public {}
    
     function initialize(
-        address _deployer,
+        address _owner,
         bytes32 _merkleRoot,
-        uint256 _startTime,
-        uint256 _endTime
     ) external {
-        owner = _deployer;
-        Ownable.initialize(_deployer);
         require(!initialized, "init: already initialized");
-        deployer = msg.sender;
-        deployer = _deployer;
+
+        owner = _owner;
         merkleRoot = _merkleRoot;
-        startTime = _startTime;
-        endTime = _endTime;
+        initialized = true;
     }
 
-    function cancel() external onlyOwner {
+    function cancelDrop() external onlyOwner {
         require(!isCancelled, "cancel: already cancelled");
+        cancelled = true;
         emit Cancelled();
     }
 
@@ -69,10 +64,9 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
     }
 
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
+        require(!cancelled, "claim: Drop is cancelled");
         require(msg.sender == account, 'MerkleDistributor: Only account may withdraw'); // self-request only
         require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
-
-
 
         // VERIFY | MERKLE PROOF
         bytes32 node = keccak256(abi.encodePacked(index, account, amount));

@@ -35,6 +35,8 @@ contract MerkleDistributorFactory is Ownable {
   function cancelDrop(address _address) external onlyOwner returns (bool) {
     for (i=0; drops.length; i++) {
       if (drops[i] == _address) {
+        MerkleDistributor merkleDistributor = MerkleDistributor(_address);
+        merkleDistributor.cancelDrop();
         delete drops[i];
         emit CancelDrop(_address);
         return true;
