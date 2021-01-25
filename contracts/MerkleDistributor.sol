@@ -11,6 +11,7 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
 
     event Cancelled();
 
+    address public owner;
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
     
@@ -32,12 +33,14 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
 
     constructor() public {}
    
-    function init(
+    function initialize(
         address _deployer,
         bytes32 _merkleRoot,
         uint256 _startTime,
         uint256 _endTime
     ) external {
+        owner = _deployer;
+        Ownable.initialize(_deployer);
         require(!initialized, "init: already initialized");
         deployer = msg.sender;
         deployer = _deployer;
