@@ -59,4 +59,8 @@ contract MerkleDistributorFactory is Ownable {
   function setTemplate(address _template) external onlyOwner {
     template = _template;
   }
+
+  function getNumDrops() view external returns (uint256) {
+    return drops.length;
+  }
 }

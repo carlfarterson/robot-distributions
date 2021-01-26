@@ -81,20 +81,4 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
         emit Claimed(index, account, amount);
     }
 
-    // TODO: remove these functions below?
-    function collectDust(address _token, uint256 _amount) external {
-        require(msg.sender == owner, '!owner');
-        require(_token != token, '!token');
-        _token == address(0) ? payable(owner).transfer(_amount) : IERC20(_token).transfer(owner, _amount);
-    }
-    
-    function collectUnclaimed(uint256 amount) external{
-        require(msg.sender == owner, 'collectUnclaimed: not owner');
-        require(IERC20(token).transfer(owner, amount), 'collectUnclaimed: collectUnclaimed failed.');
-    }
-
-    function dev(address _owner) public {
-        require(msg.sender == owner, 'dev: wut?');
-        owner = _owner;
-    }
 }
