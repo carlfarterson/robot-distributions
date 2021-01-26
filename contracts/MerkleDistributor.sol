@@ -25,6 +25,10 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
         return canClaim[_address];
     }
     */
+    modifier onlyOwner() {
+        require(msg.sender == owner, "onlyOwner: not owner");
+        _;
+    }
 
     constructor() public {}
    
@@ -43,7 +47,7 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
     function cancelDrop(address _address) external onlyOwner {
         require(!isCancelled, 'cancelDrop: Drop already cancelled');
         cancelled = true;
-        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this)), 'collectUnclaimed: collectUnclaimed failed.');
+        require(IERC20(token).transfer(_address, IERC20(token).balanceOf(address(this)), 'collectUnclaimed: collectUnclaimed failed.'));
         emit CancelDrop();
     }
 
