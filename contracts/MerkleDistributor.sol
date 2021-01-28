@@ -6,7 +6,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/cryptography/MerkleProof.sol';
 import './interfaces/IMerkleDistributor.sol';
 
-contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
+contract MerkleDistributor is Initializable, IMerkleDistributor {
 
     event CancelDrop();
 
@@ -14,34 +14,23 @@ contract MerkleDistributor is Initializable, Ownable, IMerkleDistributor {
     address public immutable override token;
     bytes32 public immutable override merkleRoot;
     
-    bool public initialized;
     bool public cancelled;
 
     mapping(uint256 => uint256) private claimedBitMap;
+    uint256[] private claimedBitIndices;
 
-    /*
-    mapping(address => bool) private canClaim;
-    function canAddressClaim(address _address) external view returns (bool)  {
-        return canClaim[_address];
-    }
-    */
     modifier onlyOwner() {
         require(msg.sender == owner, "onlyOwner: not owner");
         _;
     }
 
-    constructor() public {}
-   
-    function initialize(
-        address _owner,
+    constructor(
         address _token,
         bytes32 _merkleRoot
-    ) external {
-        require(!initialized, 'initialize: already initialized');
-        owner = _owner;
+    ) public {
+        owner = msg.sender;
         token = _token;
         merkleRoot = _merkleRoot;
-        initialized = true;
     }
 
     function cancelDrop(address _address) external onlyOwner {
