@@ -1,4 +1,4 @@
-export const ROBOTABI = [
+export const ABI = [
   {
     inputs:[],
     tateMutability: "nonpayable",
