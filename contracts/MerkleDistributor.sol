@@ -9,6 +9,7 @@ import './interfaces/IMerkleDistributor.sol';
 contract MerkleDistributor is Initializable, IMerkleDistributor {
 
     event CancelDrop();
+    event NewDrop();
 
     address public owner;
     address public immutable override token;
@@ -33,6 +34,16 @@ contract MerkleDistributor is Initializable, IMerkleDistributor {
         merkleRoot = _merkleRoot;
     }
 
+    function newDrop(bytes32 _merkleRoot) external onlyOwner {
+        for (i=claimedBitIndices.length; 0; i--) {
+            index = claimedBitIndices[i];
+            delete claimedBitIndices[i];
+            claimedBitIndices[i] = 0;
+        }
+        cancelled = false;
+        emit NewDrop();
+    }
+
     function cancelDrop(address _address) external onlyOwner {
         require(!isCancelled, 'cancelDrop: Drop already cancelled');
         cancelled = true;
@@ -52,6 +63,7 @@ contract MerkleDistributor is Initializable, IMerkleDistributor {
         uint256 claimedWordIndex = index / 256;
         uint256 claimedBitIndex = index % 256;
         claimedBitMap[claimedWordIndex] = claimedBitMap[claimedWordIndex] | (1 << claimedBitIndex);
+        claimedBitIndices.push(claimedWordIndex);
     }
 
     function claim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external override {
