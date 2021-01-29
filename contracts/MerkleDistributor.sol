@@ -40,6 +40,7 @@ contract MerkleDistributor is Initializable, IMerkleDistributor {
             delete claimedBitIndices[i];
             claimedBitIndices[i] = 0;
         }
+        merkleRoot = _merkleRoot;
         cancelled = false;
         emit NewDrop();
     }
